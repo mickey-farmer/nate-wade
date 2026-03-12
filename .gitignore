@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Optional: if your reel is over GitHub's 100MB file limit, add:
+# assets/acting/reel.mp4
+# Then host the video on Vimeo/YouTube and use an embed or direct URL in index.html.

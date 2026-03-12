@@ -1,0 +1,72 @@
+{
+  "hero": {
+    "tagline": "Actor",
+    "heroImageUrl": "assets/acting/hero.jpg"
+  },
+  "about": {
+    "headline": "Story first.",
+    "bioParagraphs": [
+      "Nate Wade is an actor based in [City]. [Add training: film/theater/voice studios and schools.]",
+      "[Add a short bio: approach to character, genres you love—comedy, drama, etc.—and what you bring to every project.]"
+    ],
+    "productionNote": "[Optional: e.g. \"Nate is fully cleared for all visible tattoos\" or \"Available for travel\" or leave blank to hide.]",
+    "aboutImageUrl": "assets/acting/about.jpg"
+  },
+  "reel": {
+    "headline": "Demo reel",
+    "videoUrl": "assets/acting/reel.mp4",
+    "posterUrl": "assets/acting/poster.jpg",
+    "placeholderLabel": "Nate Wade — Demo Reel"
+  },
+  "credits": {
+    "headline": "Credits & experience",
+    "intro": "Film, television, and theatre. View online or download PDF."
+  },
+  "gallery": {
+    "headline": "Headshots & stills",
+    "instagramHandle": "natewade",
+    "imageUrls": [
+      "assets/acting/headshot-1.jpg",
+      "assets/acting/headshot-2.jpg",
+      "assets/acting/headshot-3.jpg",
+      "assets/acting/headshot-4.jpg",
+      "assets/acting/headshot-5.jpg",
+      "assets/acting/headshot-6.jpg"
+    ]
+  },
+  "contact": {
+    "headline": "Let's work together.",
+    "intro": "Bookings, representation, or press — reach out below.",
+    "email": "your-email@example.com",
+    "instagramHandle": "natewade",
+    "imdbUrl": "https://www.imdb.com/name/nmXXXXXX/",
+    "repName": "[Agent name]",
+    "repAgency": "[Agency]",
+    "repEmail": "agent@example.com",
+    "agencyLogoUrl": "",
+    "agencyWebsiteUrl": ""
+  },
+  "resume": {
+    "name": "Nate Wade",
+    "unionStatus": "[Union status]",
+    "representation": "[Representation line]",
+    "phone": "XXX-XXX-XXXX",
+    "email": "your-email@example.com",
+    "stats": "Hair: [Color] · Eyes: [Color] · Height: [X′X″]",
+    "instagramHandle": "natewade",
+    "imdbUrl": "https://www.imdb.com/name/nmXXXXXX/",
+    "film": [
+      { "project": "[Project title]", "role": "[Role]", "director": "[Director name]" }
+    ],
+    "theatre": [
+      { "project": "[Show title]", "role": "[Role]", "director": "[Director], [Theatre]" }
+    ],
+    "training": [
+      { "project": "[e.g. On-Camera Acting]", "role": "[Instructor]", "director": "[Studio name]" }
+    ],
+    "skills": [
+      { "category": "Skills", "items": "[e.g. Dialects, instruments, sports, driving]" }
+    ],
+    "updatedDate": "March 2026"
+  }
+}
