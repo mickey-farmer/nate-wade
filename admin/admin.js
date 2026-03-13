@@ -75,6 +75,9 @@
     initPreview();
   }
 
+  // Ensure settings modal is closed on load (inline style so it always applies)
+  settingsModal.style.display = "none";
+
   // ----- Load content -----
   function loadContent() {
     fetch(CONTENT_URL)
@@ -319,21 +322,27 @@
     if (s.branch) localStorage.setItem("nate_gh_branch", s.branch || "main");
   }
 
+  function openSettingsModal() {
+    settingsModal.classList.remove("hidden");
+    settingsModal.style.display = "flex";
+  }
+
+  function closeSettingsModal() {
+    settingsModal.classList.add("hidden");
+    settingsModal.style.display = "none";
+  }
+
   settingsBtn.addEventListener("click", function () {
     var s = getSettings();
     document.getElementById("settings-token").value = s.token;
     document.getElementById("settings-owner").value = s.owner;
     document.getElementById("settings-repo").value = s.repo;
     document.getElementById("settings-branch").value = s.branch;
-    settingsModal.classList.remove("hidden");
+    openSettingsModal();
   });
 
-  settingsClose.addEventListener("click", function () {
-    settingsModal.classList.add("hidden");
-  });
-  settingsModal.querySelector(".modal-backdrop").addEventListener("click", function () {
-    settingsModal.classList.add("hidden");
-  });
+  settingsClose.addEventListener("click", closeSettingsModal);
+  settingsModal.querySelector(".modal-backdrop").addEventListener("click", closeSettingsModal);
 
   settingsSave.addEventListener("click", function () {
     setSettings({
@@ -342,7 +351,7 @@
       repo: document.getElementById("settings-repo").value.trim(),
       branch: document.getElementById("settings-branch").value.trim() || "main"
     });
-    settingsModal.classList.add("hidden");
+    closeSettingsModal();
     showToast("Settings saved. You can now use Save to GitHub.", "success");
   });
 
@@ -350,7 +359,7 @@
     var s = getSettings();
     if (!s.token || !s.owner || !s.repo) {
       showToast("Set GitHub token, owner, and repo in Settings first.", "error");
-      settingsModal.classList.remove("hidden");
+      openSettingsModal();
       return;
     }
     var content = getContentFromForm();
