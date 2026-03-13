@@ -107,6 +107,7 @@
     }
     if (data.reel) {
       setVal("reel-headline", data.reel.headline);
+      setVal("reel-youtube", data.reel.youtubeUrl || "");
       setVal("reel-video", data.reel.videoUrl);
       setVal("reel-poster", data.reel.posterUrl);
       setVal("reel-placeholder", data.reel.placeholderLabel);
@@ -207,6 +208,7 @@
       },
       reel: {
         headline: getVal("reel-headline") || "Demo reel",
+        youtubeUrl: (getVal("reel-youtube") || "").trim(),
         videoUrl: getVal("reel-video") || "assets/acting/reel.mp4",
         posterUrl: getVal("reel-poster") || "assets/acting/poster.jpg",
         placeholderLabel: getVal("reel-placeholder") || "Nate Wade — Demo Reel"
@@ -294,6 +296,8 @@
   });
 
   // ----- Nav -----
+  var ASSETS_FOLDER = "assets/acting";
+
   document.querySelectorAll(".nav-item").forEach(function (btn) {
     btn.addEventListener("click", function () {
       document.querySelectorAll(".nav-item").forEach(function (b) { b.classList.remove("is-active"); });
@@ -302,8 +306,162 @@
       var section = btn.getAttribute("data-section");
       var panel = document.getElementById("panel-" + section);
       if (panel) panel.classList.add("is-active");
+      if (section === "assets") loadAssetsList();
     });
   });
+
+  // ----- Assets: list, upload, copy path -----
+  var assetsList = document.getElementById("assets-list");
+  var assetsMessage = document.getElementById("assets-message");
+  var assetsRefreshBtn = document.getElementById("assets-refresh");
+  var assetsFileInput = document.getElementById("assets-file-input");
+
+  function loadAssetsList() {
+    var s = getSettings();
+    if (!s.token || !s.owner || !s.repo) {
+      assetsMessage.textContent = "Set GitHub token, owner, and repo in Settings to view and upload assets.";
+      assetsMessage.style.display = "block";
+      if (assetsList) assetsList.innerHTML = "";
+      return;
+    }
+    assetsMessage.textContent = "Loading…";
+    assetsMessage.style.display = "block";
+    if (assetsList) assetsList.innerHTML = "";
+    fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + ASSETS_FOLDER + "?ref=" + encodeURIComponent(s.branch), {
+      headers: { "Accept": "application/vnd.github.v3+json", "Authorization": "Bearer " + s.token }
+    })
+      .then(function (res) {
+        if (res.status === 404) {
+          assetsMessage.textContent = "Folder is empty or doesn't exist yet. Upload a file to create it.";
+          return [];
+        }
+        if (!res.ok) return res.json().then(function (body) { throw new Error(body.message || res.statusText); });
+        return res.json();
+      })
+      .then(function (items) {
+        if (!Array.isArray(items)) return;
+        assetsMessage.style.display = "none";
+        items.forEach(function (item) {
+          if (item.type !== "file") return;
+          var li = document.createElement("li");
+          li.className = "assets-item";
+          var path = item.path || (ASSETS_FOLDER + "/" + item.name);
+          var isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(item.name);
+          var thumbHtml = "";
+          if (isImage && item.download_url) {
+            thumbHtml = "<span class=\"assets-thumb-wrap\"><img class=\"assets-thumb\" src=\"" + escapeAttr(item.download_url) + "\" alt=\"\" loading=\"lazy\"></span>";
+          } else {
+            thumbHtml = "<span class=\"assets-thumb-wrap assets-thumb-placeholder\" title=\"" + escapeAttr(item.name) + "\">" + (item.name.split(".").pop() || "?") + "</span>";
+          }
+          li.innerHTML = thumbHtml + "<span class=\"assets-item-name\" title=\"" + escapeAttr(path) + "\">" + escapeHtml(item.name) + "</span><button type=\"button\" class=\"assets-copy-btn\" data-path=\"" + escapeAttr(path) + "\">Copy path</button>";
+          if (assetsList) assetsList.appendChild(li);
+        });
+        if (assetsList && assetsList.children.length === 0) {
+          assetsMessage.textContent = "No files in this folder. Upload to add.";
+          assetsMessage.style.display = "block";
+        }
+      })
+      .catch(function (err) {
+        assetsMessage.textContent = err.message || "Could not load assets.";
+        assetsMessage.style.display = "block";
+      });
+  }
+
+  function escapeHtml(s) {
+    if (!s) return "";
+    var div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function escapeAttr(s) {
+    var div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML.replace(/"/g, "&quot;");
+  }
+
+  if (assetsList) {
+    assetsList.addEventListener("click", function (e) {
+      var btn = e.target.closest(".assets-copy-btn");
+      if (!btn) return;
+      var path = btn.getAttribute("data-path");
+      if (!path) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(path).then(function () {
+          showToast("Copied: " + path, "success");
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          setTimeout(function () { btn.textContent = "Copy path"; btn.classList.remove("copied"); }, 2000);
+        });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = path;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("Copied: " + path, "success");
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(function () { btn.textContent = "Copy path"; btn.classList.remove("copied"); }, 2000);
+      }
+    });
+  }
+
+  if (assetsRefreshBtn) assetsRefreshBtn.addEventListener("click", loadAssetsList);
+
+  if (assetsFileInput) {
+    assetsFileInput.addEventListener("change", function () {
+      var files = this.files;
+      if (!files || !files.length) return;
+      var s = getSettings();
+      if (!s.token || !s.owner || !s.repo) {
+        showToast("Set GitHub settings first.", "error");
+        openSettingsModal();
+        this.value = "";
+        return;
+      }
+      var file = files[0];
+      var path = ASSETS_FOLDER + "/" + file.name;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var base64 = reader.result.split(",")[1];
+        if (!base64) { showToast("Could not read file.", "error"); return; }
+        fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + path + "?ref=" + encodeURIComponent(s.branch), {
+          method: "GET",
+          headers: { "Accept": "application/vnd.github.v3+json", "Authorization": "Bearer " + s.token }
+        })
+          .then(function (res) { return res.json(); })
+          .then(function (existing) {
+            var opts = {
+              message: "Upload " + file.name + " from admin",
+              content: base64,
+              branch: s.branch
+            };
+            if (existing.sha) opts.sha = existing.sha;
+            return fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + path, {
+              method: "PUT",
+              headers: {
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": "Bearer " + s.token,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(opts)
+            });
+          })
+          .then(function (res) {
+            if (!res.ok) return res.json().then(function (body) { throw new Error(body.message || res.statusText); });
+            showToast("Uploaded: " + file.name, "success");
+            loadAssetsList();
+          })
+          .catch(function (err) {
+            showToast(err.message || "Upload failed.", "error");
+          })
+          .finally(function () { assetsFileInput.value = ""; });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   // ----- GitHub save -----
   function getSettings() {

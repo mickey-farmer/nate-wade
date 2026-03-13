@@ -90,20 +90,23 @@
         <h3 class="reel-headline" data-reveal>Demo reel</h3>
         <div class="reel-player-wrap" data-reveal>
           <div class="reel-aspect">
-            <video
-              class="reel-video"
-              src="assets/acting/reel.mp4"
-              poster="assets/acting/poster.jpg"
-              controls
-              playsinline
-              preload="metadata"
-            ></video>
-            <div class="reel-placeholder" data-reel-placeholder>
-              <button type="button" class="reel-play" aria-label="Play reel">
-                <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="40" fill="currentColor" fill-opacity="0.2"/><path d="M34 28l20 12-20 12V28z" fill="currentColor"/></svg>
-              </button>
-              <p>Nate Wade — Demo Reel</p>
+            <div class="reel-native">
+              <video
+                class="reel-video"
+                src="assets/acting/reel.mp4"
+                poster="assets/acting/poster.jpg"
+                controls
+                playsinline
+                preload="metadata"
+              ></video>
+              <div class="reel-placeholder" data-reel-placeholder>
+                <button type="button" class="reel-play" aria-label="Play reel">
+                  <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="40" fill="currentColor" fill-opacity="0.2"/><path d="M34 28l20 12-20 12V28z" fill="currentColor"/></svg>
+                </button>
+                <p>Nate Wade — Demo Reel</p>
+              </div>
             </div>
+            <div class="reel-youtube" id="reel-youtube-wrap" aria-hidden="true"></div>
           </div>
         </div>
       </div>

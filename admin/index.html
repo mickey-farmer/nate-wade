@@ -40,6 +40,7 @@
           <button type="button" class="nav-item" data-section="gallery">Gallery</button>
           <button type="button" class="nav-item" data-section="contact">Contact</button>
           <button type="button" class="nav-item" data-section="resume">Resume</button>
+          <button type="button" class="nav-item" data-section="assets">Assets</button>
         </nav>
       </aside>
 
@@ -87,7 +88,11 @@
             <input type="text" id="reel-headline" placeholder="Demo reel">
           </div>
           <div class="field">
-            <label for="reel-video">Video URL/path</label>
+            <label for="reel-youtube">YouTube URL (optional — embed instead of self-hosted video)</label>
+            <input type="url" id="reel-youtube" placeholder="https://www.youtube.com/watch?v=xxxx or https://youtu.be/xxxx">
+          </div>
+          <div class="field">
+            <label for="reel-video">Video URL/path (used when YouTube is blank)</label>
             <input type="text" id="reel-video" placeholder="assets/acting/reel.mp4">
           </div>
           <div class="field">
@@ -218,6 +223,23 @@
           <h3>Special skills (one per line: Category | Items)</h3>
           <div class="field">
             <textarea id="resume-skills" rows="4" placeholder="Skills	Dialects, instruments, sports"></textarea>
+          </div>
+        </div>
+
+        <div class="form-panel" id="panel-assets">
+          <h2>Assets</h2>
+          <p class="assets-hint">Upload files to your repo and copy paths to use in Hero, About, Reel, Gallery, etc. Set GitHub settings first.</p>
+          <div class="assets-toolbar">
+            <span class="assets-folder" id="assets-folder-path">assets/acting</span>
+            <div class="assets-actions">
+              <button type="button" id="assets-refresh" class="btn btn-ghost">Refresh</button>
+              <label class="btn btn-primary" for="assets-file-input">Upload file</label>
+              <input type="file" id="assets-file-input" class="assets-file-input" accept="image/*,.pdf,.mp4,.webm,.webp" multiple>
+            </div>
+          </div>
+          <div id="assets-list-wrap" class="assets-list-wrap">
+            <p id="assets-message" class="assets-message">Load assets to see files.</p>
+            <ul id="assets-list" class="assets-list" aria-label="Files in assets/acting"></ul>
           </div>
         </div>
       </main>

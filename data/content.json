@@ -14,6 +14,7 @@
   },
   "reel": {
     "headline": "Demo reel",
+    "youtubeUrl": "",
     "videoUrl": "assets/acting/reel.mp4",
     "posterUrl": "assets/acting/poster.jpg",
     "placeholderLabel": "Nate Wade — Demo Reel"
