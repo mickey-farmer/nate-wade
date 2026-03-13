@@ -1,6 +1,6 @@
 {
   "hero": {
-    "tagline": "Actor",
+    "tagline": "Film | TV | Voice Over",
     "heroImageUrl": "assets/acting/hero.jpg"
   },
   "about": {
@@ -55,18 +55,38 @@
     "stats": "Hair: [Color] · Eyes: [Color] · Height: [X′X″]",
     "instagramHandle": "natewade",
     "imdbUrl": "https://www.imdb.com/name/nmXXXXXX/",
+    "updatedDate": "March 2026",
     "film": [
-      { "project": "[Project title]", "role": "[Role]", "director": "[Director name]" }
+      {
+        "project": "First Light",
+        "role": "Supporting",
+        "director": "dir. Rorey Younge"
+      },
+      {
+        "project": "Test",
+        "role": "test",
+        "director": "test"
+      }
     ],
     "theatre": [
-      { "project": "[Show title]", "role": "[Role]", "director": "[Director], [Theatre]" }
+      {
+        "project": "[Show title]",
+        "role": "[Role]",
+        "director": "[Director], [Theatre]"
+      }
     ],
     "training": [
-      { "project": "[e.g. On-Camera Acting]", "role": "[Instructor]", "director": "[Studio name]" }
+      {
+        "project": "[e.g. On-Camera Acting]",
+        "role": "[Instructor]",
+        "director": "[Studio name]"
+      }
     ],
     "skills": [
-      { "category": "Skills", "items": "[e.g. Dialects, instruments, sports, driving]" }
-    ],
-    "updatedDate": "March 2026"
+      {
+        "category": "Skills",
+        "items": "[e.g. Dialects, instruments, sports, driving]"
+      }
+    ]
   }
 }
