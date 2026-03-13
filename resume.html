@@ -305,6 +305,39 @@
           }
         });
       }
+
+      // Synopsis tooltips (event delegation so content.js-injected triggers work)
+      var tooltip = document.createElement('div');
+      tooltip.className = 'resume-synopsis-tooltip';
+      tooltip.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(tooltip);
+      function showTooltip(trigger) {
+        var synopsis = trigger.getAttribute('data-synopsis');
+        if (!synopsis) return;
+        var title = trigger.getAttribute('data-title') || trigger.closest('td').textContent.trim();
+        var genre = trigger.getAttribute('data-genre') || '';
+        var genreHtml = genre ? '<span class="tooltip-genre">' + genre + '</span>' : '';
+        tooltip.innerHTML = '<strong>' + title + '</strong>' + genreHtml + synopsis;
+        tooltip.classList.add('is-visible');
+        var rect = trigger.getBoundingClientRect();
+        var ttRect = tooltip.getBoundingClientRect();
+        var left = rect.left + (rect.width / 2) - (ttRect.width / 2);
+        var top = rect.bottom + 8;
+        if (left < 8) left = 8;
+        if (left + ttRect.width > window.innerWidth - 8) left = window.innerWidth - ttRect.width - 8;
+        if (top + ttRect.height > window.innerHeight - 8) top = rect.top - ttRect.height - 8;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      }
+      function hideTooltip() { tooltip.classList.remove('is-visible'); }
+      document.body.addEventListener('mouseover', function(e) {
+        var trigger = e.target.closest('.resume-project-trigger[data-synopsis]');
+        if (trigger) showTooltip(trigger);
+      });
+      document.body.addEventListener('mouseout', function(e) {
+        var trigger = e.target.closest('.resume-project-trigger[data-synopsis]');
+        if (trigger) hideTooltip();
+      });
     })();
   </script>
   <script src="js/main.js"></script>

@@ -248,6 +248,13 @@ body {
   font-size: 0.75rem;
   color: var(--admin-muted);
 }
+.admin-hint-inline {
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+  line-height: 1.4;
+}
+.admin-hint-inline strong { color: var(--admin-text); }
 
 .admin-preview {
   border-left: 1px solid var(--admin-border);

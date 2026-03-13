@@ -144,9 +144,13 @@
       setVal("resume-film", data.resume.film && data.resume.film.map(function (r) {
         return [r.project, r.role, r.director].join("\t");
       }).join("\n"));
+      setVal("resume-film-synopses", data.resume.film && data.resume.film.map(function (r) { return r.synopsis || ""; }).join("\n"));
+      setVal("resume-film-genres", data.resume.film && data.resume.film.map(function (r) { return r.genre || ""; }).join("\n"));
       setVal("resume-theatre", data.resume.theatre && data.resume.theatre.map(function (r) {
         return [r.project, r.role, r.director].join("\t");
       }).join("\n"));
+      setVal("resume-theatre-synopses", data.resume.theatre && data.resume.theatre.map(function (r) { return r.synopsis || ""; }).join("\n"));
+      setVal("resume-theatre-genres", data.resume.theatre && data.resume.theatre.map(function (r) { return r.genre || ""; }).join("\n"));
       setVal("resume-training", data.resume.training && data.resume.training.map(function (r) {
         return [r.project, r.role, r.director].join("\t");
       }).join("\n"));
@@ -192,9 +196,27 @@
     });
   }
 
+  function mergeSynopsisGenre(rows, synopsisText, genreText) {
+    var synopsisLines = (synopsisText || "").split("\n").map(function (s) { return s.trim(); });
+    var genreLines = (genreText || "").split("\n").map(function (s) { return s.trim(); });
+    return rows.map(function (row, i) {
+      return {
+        project: row.project,
+        role: row.role,
+        director: row.director,
+        synopsis: synopsisLines[i] || "",
+        genre: genreLines[i] || ""
+      };
+    });
+  }
+
   function getContentFromForm() {
     var galleryUrls = getVal("gallery-images").split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
     while (galleryUrls.length < 6) galleryUrls.push("");
+    var filmRows = parseTableTextarea(getVal("resume-film"));
+    var theatreRows = parseTableTextarea(getVal("resume-theatre"));
+    var film = filmRows.length ? mergeSynopsisGenre(filmRows, getVal("resume-film-synopses"), getVal("resume-film-genres")) : [{ project: "", role: "", director: "", synopsis: "", genre: "" }];
+    var theatre = theatreRows.length ? mergeSynopsisGenre(theatreRows, getVal("resume-theatre-synopses"), getVal("resume-theatre-genres")) : [{ project: "", role: "", director: "", synopsis: "", genre: "" }];
     return {
       hero: {
         tagline: getVal("hero-tagline") || "Actor",
@@ -244,8 +266,8 @@
         instagramHandle: getVal("resume-instagram") || "natewade",
         imdbUrl: getVal("resume-imdb"),
         updatedDate: getVal("resume-updated") || "March 2026",
-        film: parseTableTextarea(getVal("resume-film")).length ? parseTableTextarea(getVal("resume-film")) : [{ project: "", role: "", director: "" }],
-        theatre: parseTableTextarea(getVal("resume-theatre")).length ? parseTableTextarea(getVal("resume-theatre")) : [{ project: "", role: "", director: "" }],
+        film: film,
+        theatre: theatre,
         training: parseTableTextarea(getVal("resume-training")).length ? parseTableTextarea(getVal("resume-training")) : [{ project: "", role: "", director: "" }],
         skills: parseSkillsTextarea(getVal("resume-skills")).length ? parseSkillsTextarea(getVal("resume-skills")) : [{ category: "Skills", items: "" }]
       }

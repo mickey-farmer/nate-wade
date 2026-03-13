@@ -202,14 +202,33 @@
     return div.innerHTML;
   }
 
+  function escapeAttr(s) {
+    if (!s) return "";
+    var div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML.replace(/"/g, "&quot;");
+  }
+
   function fillResumeTable(sectionId, rows) {
     var section = document.querySelector("[aria-labelledby=\"" + sectionId.replace("#", "") + "\"]");
     if (!section) return;
     var tbody = section.querySelector("tbody");
     if (!tbody) return;
+    var infoIconSvg = "<svg class=\"resume-info-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/></svg>";
     tbody.innerHTML = rows.map(function (row) {
+      var synopsis = (row.synopsis || "").trim();
+      var genre = (row.genre || "").trim();
+      var hasTooltip = synopsis || genre;
+      var projectCell = "";
+      if (hasTooltip) {
+        var title = escapeAttr(row.project || "");
+        var synopsisAttr = escapeAttr(synopsis);
+        var genreAttr = escapeAttr(genre);
+        projectCell = "<span class=\"resume-project-trigger\" data-title=\"" + title + "\" data-synopsis=\"" + synopsisAttr + "\" data-genre=\"" + genreAttr + "\" aria-label=\"More info about " + title + "\">" + infoIconSvg + "</span>";
+      }
+      projectCell += escapeHtml(row.project || "");
       return "<tr>" +
-        "<td class=\"col-project\">" + escapeHtml(row.project || "") + "</td>" +
+        "<td class=\"col-project\">" + projectCell + "</td>" +
         "<td class=\"col-role\">" + escapeHtml(row.role || "") + "</td>" +
         "<td class=\"col-director\">" + escapeHtml(row.director || "") + "</td>" +
         "</tr>";

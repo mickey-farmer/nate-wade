@@ -61,19 +61,25 @@
       {
         "project": "First Light",
         "role": "Supporting",
-        "director": "dir. Rorey Younge"
+        "director": "dir. Rorey Younge",
+        "synopsis": "",
+        "genre": ""
       },
       {
         "project": "Test",
         "role": "test",
-        "director": "test"
+        "director": "test",
+        "synopsis": "",
+        "genre": ""
       }
     ],
     "theatre": [
       {
         "project": "[Show title]",
         "role": "[Role]",
-        "director": "[Director], [Theatre]"
+        "director": "[Director], [Theatre]",
+        "synopsis": "",
+        "genre": ""
       }
     ],
     "training": [
