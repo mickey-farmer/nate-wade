@@ -343,7 +343,7 @@
       branch: document.getElementById("settings-branch").value.trim() || "main"
     });
     settingsModal.classList.add("hidden");
-    showToast("Settings saved.", "success");
+    showToast("Settings saved. You can now use Save to GitHub.", "success");
   });
 
   function saveToGitHub() {
