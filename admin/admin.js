@@ -80,7 +80,7 @@
 
   // ----- Load content -----
   function loadContent() {
-    fetch(CONTENT_URL)
+    fetch(CONTENT_URL, { cache: "no-store" })
       .then(function (res) { return res.ok ? res.json() : null; })
       .then(function (data) {
         if (data) {
@@ -141,13 +141,16 @@
       setVal("resume-instagram", data.resume.instagramHandle ? data.resume.instagramHandle.replace(/^@/, "") : "");
       setVal("resume-imdb", data.resume.imdbUrl);
       setVal("resume-updated", data.resume.updatedDate);
-      var sections = data.resume.sections && Array.isArray(data.resume.sections) && data.resume.sections.length
+      var sections = Array.isArray(data.resume.sections)
         ? data.resume.sections
         : [
             data.resume.film && data.resume.film.length ? { title: "Film", rows: data.resume.film } : null,
             data.resume.theatre && data.resume.theatre.length ? { title: "Theatre", rows: data.resume.theatre } : null,
             data.resume.training && data.resume.training.length ? { title: "Training", rows: data.resume.training } : null
           ].filter(Boolean);
+      sections = (sections || []).map(function (s) {
+        return { title: (s && s.title) || "Section", rows: Array.isArray(s && s.rows) ? s.rows : [] };
+      });
       if (!sections.length) sections = [{ title: "Film", rows: [] }, { title: "Theatre", rows: [] }, { title: "Training", rows: [] }];
       renderResumeSections(sections);
       setVal("resume-skills", data.resume.skills && data.resume.skills.map(function (s) {
@@ -192,7 +195,6 @@
     });
   }
 
-  var resumeSectionsContainer = document.getElementById("resume-sections-admin");
   var resumeAddSectionBtn = document.getElementById("resume-add-section");
 
   function makeResumeRowEl(row) {
@@ -222,50 +224,54 @@
   }
 
   function renderResumeSections(sections) {
-    if (!resumeSectionsContainer) return;
-    resumeSectionsContainer.innerHTML = "";
+    var container = document.getElementById("resume-sections-admin");
+    if (!container) return;
+    container.innerHTML = "";
     (sections || []).forEach(function (sec) {
-      resumeSectionsContainer.appendChild(makeSectionBlockEl(sec));
+      container.appendChild(makeSectionBlockEl(sec));
     });
     bindResumeSectionEvents();
   }
 
   function bindResumeSectionEvents() {
-    if (!resumeSectionsContainer) return;
-    resumeSectionsContainer.querySelectorAll(".resume-add-row").forEach(function (btn) {
+    var container = document.getElementById("resume-sections-admin");
+    if (!container) return;
+    container.querySelectorAll(".resume-add-row").forEach(function (btn) {
       btn.onclick = function () {
         var block = btn.closest(".resume-section-block");
-        var container = block && block.querySelector(".resume-rows-container");
-        if (container) container.appendChild(makeResumeRowEl());
+        var rowsContainer = block && block.querySelector(".resume-rows-container");
+        if (rowsContainer) rowsContainer.appendChild(makeResumeRowEl());
       };
     });
-    resumeSectionsContainer.querySelectorAll(".resume-row-remove").forEach(function (btn) {
+    container.querySelectorAll(".resume-row-remove").forEach(function (btn) {
       btn.onclick = function () {
         var row = btn.closest(".resume-row-card");
-        var container = row && row.parentElement;
-        if (container && container.querySelectorAll(".resume-row-card").length > 1) row.remove();
+        var rowContainer = row && row.parentElement;
+        if (rowContainer && rowContainer.querySelectorAll(".resume-row-card").length > 1) row.remove();
       };
     });
-    resumeSectionsContainer.querySelectorAll(".resume-section-remove").forEach(function (btn) {
+    container.querySelectorAll(".resume-section-remove").forEach(function (btn) {
       btn.onclick = function () {
         var block = btn.closest(".resume-section-block");
-        if (block && resumeSectionsContainer.querySelectorAll(".resume-section-block").length > 1) block.remove();
+        if (block && container.querySelectorAll(".resume-section-block").length > 1) block.remove();
       };
     });
   }
 
   if (resumeAddSectionBtn) {
     resumeAddSectionBtn.addEventListener("click", function () {
-      if (!resumeSectionsContainer) return;
-      resumeSectionsContainer.appendChild(makeSectionBlockEl({ title: "New section", rows: [] }));
+      var container = document.getElementById("resume-sections-admin");
+      if (!container) return;
+      container.appendChild(makeSectionBlockEl({ title: "New section", rows: [] }));
       bindResumeSectionEvents();
     });
   }
 
   function getResumeSectionsFromAdmin() {
-    if (!resumeSectionsContainer) return [];
+    var container = document.getElementById("resume-sections-admin");
+    if (!container) return [];
     var out = [];
-    resumeSectionsContainer.querySelectorAll(".resume-section-block").forEach(function (block) {
+    container.querySelectorAll(".resume-section-block").forEach(function (block) {
       var titleInput = block.querySelector(".resume-section-title-input");
       var title = titleInput ? titleInput.value.trim() || "Section" : "Section";
       var rows = [];
