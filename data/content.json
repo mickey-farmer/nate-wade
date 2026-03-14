@@ -1,7 +1,7 @@
 {
   "hero": {
     "tagline": "Film | TV | Voice Over | update",
-    "heroImageUrl": "assets/acting/Screenshot 2026-03-13 at 5.25.27 PM.png"
+    "heroImageUrl": "assets/acting/"
   },
   "about": {
     "headline": "Story first.",
@@ -59,23 +59,23 @@
     "updatedDate": "March 2026",
     "sections": [
       {
-        "project": "First Light",
-        "role": "Supporting",
-        "director": "dir. Rorey Younge",
-        "synopsis": "",
-        "genre": ""
-      }
-    ],
-    "theatre": [
-      {
-        "title": "Training",
+        "title": "Film",
         "rows": [
-          { "project": "[e.g. On-Camera Acting]", "role": "[Instructor]", "director": "[Studio name]", "synopsis": "", "genre": "" }
+          {
+            "project": "First Light",
+            "role": "Supporting",
+            "director": "Rorey Younge",
+            "synopsis": "",
+            "genre": ""
+          }
         ]
       }
     ],
     "skills": [
-      { "category": "Skills", "items": "[e.g. Dialects, instruments, sports, driving]" }
+      {
+        "category": "Skills",
+        "items": "[e.g. Dialects, instruments, sports, driving]"
+      }
     ]
   }
 }
