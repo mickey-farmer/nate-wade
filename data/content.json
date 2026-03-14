@@ -59,23 +59,23 @@
     "updatedDate": "March 2026",
     "sections": [
       {
-        "project": "First Light",
-        "role": "Supporting",
-        "director": "dir. Rorey Younge",
-        "synopsis": "",
-        "genre": ""
-      }
-    ],
-    "theatre": [
-      {
-        "title": "Training",
+        "title": "Film",
         "rows": [
-          { "project": "[e.g. On-Camera Acting]", "role": "[Instructor]", "director": "[Studio name]", "synopsis": "", "genre": "" }
+          {
+            "project": "First Light",
+            "role": "Supporting",
+            "director": "dir. Rorey Younge",
+            "synopsis": "",
+            "genre": "Drama"
+          }
         ]
       }
     ],
     "skills": [
-      { "category": "Skills", "items": "[e.g. Dialects, instruments, sports, driving]" }
+      {
+        "category": "Skills",
+        "items": "[e.g. Dialects, instruments, sports, driving]"
+      }
     ]
   }
 }
