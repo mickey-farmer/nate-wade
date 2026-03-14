@@ -1,7 +1,7 @@
 {
   "hero": {
-    "tagline": "Film | TV | Voice Over",
-    "heroImageUrl": "assets/acting/hero.jpg"
+    "tagline": "Film | TV | Voice Over | update",
+    "heroImageUrl": "assets/acting/Screenshot 2026-03-13 at 5.25.27 PM.png"
   },
   "about": {
     "headline": "Story first.",
@@ -10,7 +10,7 @@
       "[Add a short bio: approach to character, genres you love—comedy, drama, etc.—and what you bring to every project.]"
     ],
     "productionNote": "[Optional: e.g. \"Nate is fully cleared for all visible tattoos\" or \"Available for travel\" or leave blank to hide.]",
-    "aboutImageUrl": "assets/acting/about.jpg"
+    "aboutImageUrl": "assets/acting/hero.jpg"
   },
   "reel": {
     "headline": "Demo reel",
