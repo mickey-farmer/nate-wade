@@ -184,7 +184,7 @@
     // Resume: sections (or legacy film/theatre/training) + skills
     var sectionsContainer = document.getElementById("resume-sections-container");
     if (data.resume && sectionsContainer) {
-      var sections = data.resume.sections && Array.isArray(data.resume.sections) && data.resume.sections.length
+      var sections = Array.isArray(data.resume.sections)
         ? data.resume.sections
         : legacySectionsFromResume(data.resume);
       fillResumeSections(sectionsContainer, sections);
@@ -289,7 +289,7 @@
     return;
   }
 
-  fetch("data/content.json")
+  fetch("data/content.json", { cache: "no-store" })
     .then(function (res) { return res.ok ? res.json() : null; })
     .then(function (data) {
       if (data) applyContent(data);

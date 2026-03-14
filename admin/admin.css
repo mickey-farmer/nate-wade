@@ -524,6 +524,35 @@ body {
   border-color: #238636;
   color: #238636;
 }
+.assets-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+.assets-open-btn,
+.assets-rename-btn,
+.assets-delete-btn {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  font-family: inherit;
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  border-radius: 4px;
+  color: var(--admin-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+.assets-open-btn:hover,
+.assets-rename-btn:hover {
+  color: var(--admin-accent);
+  border-color: var(--admin-accent);
+}
+.assets-delete-btn:hover {
+  color: #f85149;
+  border-color: #f85149;
+}
 
 /* ----- Toast ----- */
 .toast {

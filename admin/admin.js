@@ -446,7 +446,13 @@
           } else {
             thumbHtml = "<span class=\"assets-thumb-wrap assets-thumb-placeholder\" title=\"" + escapeAttr(item.name) + "\">" + (item.name.split(".").pop() || "?") + "</span>";
           }
-          li.innerHTML = thumbHtml + "<span class=\"assets-item-name\" title=\"" + escapeAttr(path) + "\">" + escapeHtml(item.name) + "</span><button type=\"button\" class=\"assets-copy-btn\" data-path=\"" + escapeAttr(path) + "\">Copy path</button>";
+          var actions = "<span class=\"assets-item-actions\">" +
+            "<button type=\"button\" class=\"assets-copy-btn\" data-path=\"" + escapeAttr(path) + "\">Copy path</button>" +
+            (item.download_url ? "<a href=\"" + escapeAttr(item.download_url) + "\" target=\"_blank\" rel=\"noopener\" class=\"assets-open-btn\">Open</a>" : "") +
+            "<button type=\"button\" class=\"assets-rename-btn\" data-path=\"" + escapeAttr(path) + "\" data-name=\"" + escapeAttr(item.name) + "\" data-sha=\"" + escapeAttr(item.sha || "") + "\">Rename</button>" +
+            "<button type=\"button\" class=\"assets-delete-btn\" data-path=\"" + escapeAttr(path) + "\" data-sha=\"" + escapeAttr(item.sha || "") + "\">Delete</button>" +
+            "</span>";
+          li.innerHTML = thumbHtml + "<span class=\"assets-item-name\" title=\"" + escapeAttr(path) + "\">" + escapeHtml(item.name) + "</span>" + actions;
           if (assetsList) assetsList.appendChild(li);
         });
         if (assetsList && assetsList.children.length === 0) {
@@ -473,30 +479,111 @@
     return div.innerHTML.replace(/"/g, "&quot;");
   }
 
+  function deleteAsset(path, sha) {
+    var s = getSettings();
+    if (!s.token || !s.owner || !s.repo) {
+      showToast("Set GitHub settings first.", "error");
+      return;
+    }
+    if (!sha) {
+      showToast("Cannot delete: missing file info. Refresh and try again.", "error");
+      return;
+    }
+    if (!confirm("Delete \"" + path + "\" from the repo? This cannot be undone.")) return;
+    showToast("Deleting…", "success");
+    fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + encodeURIComponent(path), {
+      method: "DELETE",
+      headers: { "Accept": "application/vnd.github.v3+json", "Authorization": "Bearer " + s.token, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Remove " + path.split("/").pop() + " from admin", sha: sha, branch: s.branch })
+    })
+      .then(function (res) {
+        if (!res.ok) return res.json().then(function (body) { throw new Error(body.message || res.statusText); });
+        showToast("Deleted from GitHub.", "success");
+        loadAssetsList();
+      })
+      .catch(function (err) {
+        showToast(err.message || "Delete failed.", "error");
+      });
+  }
+
+  function renameAsset(path, sha, currentName) {
+    var s = getSettings();
+    if (!s.token || !s.owner || !s.repo) {
+      showToast("Set GitHub settings first.", "error");
+      return;
+    }
+    var newName = prompt("New filename:", currentName);
+    if (newName == null || !newName.trim()) return;
+    newName = newName.trim();
+    if (newName === currentName) return;
+    var lastSlash = path.lastIndexOf("/");
+    var newPath = lastSlash >= 0 ? path.slice(0, lastSlash + 1) + newName : ASSETS_FOLDER + "/" + newName;
+    showToast("Renaming…", "success");
+    fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + encodeURIComponent(path) + "?ref=" + encodeURIComponent(s.branch), {
+      headers: { "Accept": "application/vnd.github.v3+json", "Authorization": "Bearer " + s.token }
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (file) {
+        if (!file.content) throw new Error("Could not read file");
+        return fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + encodeURIComponent(newPath), {
+          method: "PUT",
+          headers: { "Accept": "application/vnd.github.v3+json", "Authorization": "Bearer " + s.token, "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Rename " + currentName + " to " + newName + " from admin", content: file.content, branch: s.branch })
+        });
+      })
+      .then(function (res) {
+        if (!res.ok) return res.json().then(function (body) { throw new Error(body.message || res.statusText); });
+        return fetch("https://api.github.com/repos/" + s.owner + "/" + s.repo + "/contents/" + encodeURIComponent(path), {
+          method: "DELETE",
+          headers: { "Accept": "application/vnd.github.v3+json", "Authorization": "Bearer " + s.token, "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Remove old file after rename", sha: sha, branch: s.branch })
+        });
+      })
+      .then(function (res) {
+        if (!res.ok) return res.json().then(function (body) { throw new Error(body.message || res.statusText); });
+        showToast("Renamed to " + newName, "success");
+        loadAssetsList();
+      })
+      .catch(function (err) {
+        showToast(err.message || "Rename failed.", "error");
+      });
+  }
+
   if (assetsList) {
     assetsList.addEventListener("click", function (e) {
-      var btn = e.target.closest(".assets-copy-btn");
-      if (!btn) return;
-      var path = btn.getAttribute("data-path");
-      if (!path) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(path).then(function () {
+      var copyBtn = e.target.closest(".assets-copy-btn");
+      if (copyBtn) {
+        var path = copyBtn.getAttribute("data-path");
+        if (!path) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(path).then(function () {
+            showToast("Copied: " + path, "success");
+            copyBtn.textContent = "Copied!";
+            copyBtn.classList.add("copied");
+            setTimeout(function () { copyBtn.textContent = "Copy path"; copyBtn.classList.remove("copied"); }, 2000);
+          });
+        } else {
+          var ta = document.createElement("textarea");
+          ta.value = path;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
           showToast("Copied: " + path, "success");
-          btn.textContent = "Copied!";
-          btn.classList.add("copied");
-          setTimeout(function () { btn.textContent = "Copy path"; btn.classList.remove("copied"); }, 2000);
-        });
-      } else {
-        var ta = document.createElement("textarea");
-        ta.value = path;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        showToast("Copied: " + path, "success");
-        btn.textContent = "Copied!";
-        btn.classList.add("copied");
-        setTimeout(function () { btn.textContent = "Copy path"; btn.classList.remove("copied"); }, 2000);
+          copyBtn.textContent = "Copied!";
+          copyBtn.classList.add("copied");
+          setTimeout(function () { copyBtn.textContent = "Copy path"; copyBtn.classList.remove("copied"); }, 2000);
+        }
+        return;
+      }
+      var renameBtn = e.target.closest(".assets-rename-btn");
+      if (renameBtn) {
+        renameAsset(renameBtn.getAttribute("data-path"), renameBtn.getAttribute("data-sha"), renameBtn.getAttribute("data-name") || "");
+        return;
+      }
+      var deleteBtn = e.target.closest(".assets-delete-btn");
+      if (deleteBtn) {
+        deleteAsset(deleteBtn.getAttribute("data-path"), deleteBtn.getAttribute("data-sha"));
       }
     });
   }
