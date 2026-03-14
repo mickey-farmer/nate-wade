@@ -208,36 +208,11 @@
             <label for="resume-updated">Resume updated date</label>
             <input type="text" id="resume-updated" placeholder="March 2026">
           </div>
-          <h3>Film credits (one per line: Project | Role | Director)</h3>
-          <div class="field">
-            <textarea id="resume-film" rows="5" placeholder="Project Title (Short)	Lead	Director Name"></textarea>
-          </div>
-          <p class="admin-hint-inline">Optional: synopsis and genre below show as <strong>hover tooltips</strong> on the resume (one line per credit, same order as above).</p>
-          <div class="field">
-            <label for="resume-film-synopses">Film synopses</label>
-            <textarea id="resume-film-synopses" rows="3" placeholder="Short description of each project..."></textarea>
-          </div>
-          <div class="field">
-            <label for="resume-film-genres">Film genres</label>
-            <textarea id="resume-film-genres" rows="2" placeholder="One per line: Comedy, Drama, ..."></textarea>
-          </div>
-          <h3>Theatre credits</h3>
-          <div class="field">
-            <textarea id="resume-theatre" rows="5" placeholder="Show Title	Role	Director, Theatre"></textarea>
-          </div>
-          <div class="field">
-            <label for="resume-theatre-synopses">Theatre synopses</label>
-            <textarea id="resume-theatre-synopses" rows="3"></textarea>
-          </div>
-          <div class="field">
-            <label for="resume-theatre-genres">Theatre genres</label>
-            <textarea id="resume-theatre-genres" rows="2" placeholder="Musical\nComedy"></textarea>
-          </div>
-          <h3>Training</h3>
-          <div class="field">
-            <textarea id="resume-training" rows="4" placeholder="On-Camera Acting	Instructor	Studio"></textarea>
-          </div>
-          <h3>Special skills (one per line: Category | Items)</h3>
+          <h3>Resume sections</h3>
+          <p class="admin-hint-inline">Add sections (e.g. Film, Theatre, Voice) and use <strong>+ Add row</strong> for each credit. Synopsis and genre appear as hover tooltips on the resume.</p>
+          <div id="resume-sections-admin"></div>
+          <button type="button" id="resume-add-section" class="btn btn-ghost resume-add-section-btn">+ Add section</button>
+          <h3 style="margin-top: 1.5rem;">Special skills (one per line: Category | Items)</h3>
           <div class="field">
             <textarea id="resume-skills" rows="4" placeholder="Skills	Dialects, instruments, sports"></textarea>
           </div>
@@ -245,7 +220,7 @@
 
         <div class="form-panel" id="panel-assets">
           <h2>Assets</h2>
-          <p class="assets-hint">Upload files to your repo and copy paths to use in Hero, About, Reel, Gallery, etc. Set GitHub settings first.</p>
+          <p class="assets-hint">Upload files to your repo and copy paths to use in Hero, About, Reel, Gallery, etc. Files are committed to GitHub when you upload — set GitHub settings first.</p>
           <div class="assets-toolbar">
             <span class="assets-folder" id="assets-folder-path">assets/acting</span>
             <div class="assets-actions">

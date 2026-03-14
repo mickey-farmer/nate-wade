@@ -57,43 +57,29 @@
     "instagramHandle": "natewade",
     "imdbUrl": "https://www.imdb.com/name/nmXXXXXX/",
     "updatedDate": "March 2026",
-    "film": [
+    "sections": [
       {
-        "project": "First Light",
-        "role": "Supporting",
-        "director": "dir. Rorey Younge",
-        "synopsis": "",
-        "genre": ""
+        "title": "Film",
+        "rows": [
+          { "project": "First Light", "role": "Supporting", "director": "dir. Rorey Younge", "synopsis": "", "genre": "" },
+          { "project": "Test", "role": "test", "director": "test", "synopsis": "", "genre": "" }
+        ]
       },
       {
-        "project": "Test",
-        "role": "test",
-        "director": "test",
-        "synopsis": "",
-        "genre": ""
-      }
-    ],
-    "theatre": [
+        "title": "Theatre",
+        "rows": [
+          { "project": "[Show title]", "role": "[Role]", "director": "[Director], [Theatre]", "synopsis": "", "genre": "" }
+        ]
+      },
       {
-        "project": "[Show title]",
-        "role": "[Role]",
-        "director": "[Director], [Theatre]",
-        "synopsis": "",
-        "genre": ""
-      }
-    ],
-    "training": [
-      {
-        "project": "[e.g. On-Camera Acting]",
-        "role": "[Instructor]",
-        "director": "[Studio name]"
+        "title": "Training",
+        "rows": [
+          { "project": "[e.g. On-Camera Acting]", "role": "[Instructor]", "director": "[Studio name]", "synopsis": "", "genre": "" }
+        ]
       }
     ],
     "skills": [
-      {
-        "category": "Skills",
-        "items": "[e.g. Dialects, instruments, sports, driving]"
-      }
+      { "category": "Skills", "items": "[e.g. Dialects, instruments, sports, driving]" }
     ]
   }
 }

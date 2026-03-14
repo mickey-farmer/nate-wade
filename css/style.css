@@ -1,6 +1,6 @@
 /* ============================================
    Nate Wade — Actor Website
-   Distinct identity: editorial tone, warm navy + amber
+   Distinct identity: editorial tone, warm navy + orange
    ============================================ */
 
 :root {
@@ -9,9 +9,9 @@
   --surface: #1a1f2e;
   --text: #f0f1f4;
   --text-muted: #8b92a8;
-  --accent: #c9a227;
-  --accent-hover: #ddb83a;
-  --accent-soft: rgba(201, 162, 39, 0.12);
+  --accent: #d9730d;
+  --accent-hover: #ea580c;
+  --accent-soft: rgba(217, 115, 13, 0.12);
   --border: rgba(240, 241, 244, 0.08);
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "DM Sans", system-ui, sans-serif;

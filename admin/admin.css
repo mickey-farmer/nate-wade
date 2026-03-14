@@ -5,8 +5,8 @@
   --admin-border: rgba(255,255,255,0.08);
   --admin-text: #e6edf3;
   --admin-muted: #8b949e;
-  --admin-accent: #c9a227;
-  --admin-accent-hover: #ddb83a;
+  --admin-accent: #d9730d;
+  --admin-accent-hover: #ea580c;
 }
 
 * { box-sizing: border-box; }
@@ -255,6 +255,66 @@ body {
   line-height: 1.4;
 }
 .admin-hint-inline strong { color: var(--admin-text); }
+
+/* Resume sections + row editor */
+.resume-add-section-btn { margin-top: 0.5rem; }
+.resume-section-block {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+}
+.resume-section-block-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.resume-section-title-input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 4px;
+  color: var(--admin-text);
+}
+.resume-section-remove { flex-shrink: 0; font-size: 0.8rem; }
+.resume-rows-container { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.5rem; }
+.resume-row-card {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.6rem;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+}
+.resume-row-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+.resume-row-fields .resume-row-project { grid-column: 1 / -1; }
+.resume-row-fields .resume-row-synopsis { grid-column: 1 / -1; resize: vertical; min-height: 2.5em; }
+.resume-row-fields input,
+.resume-row-fields textarea {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 4px;
+  color: var(--admin-text);
+  width: 100%;
+}
+.resume-row-remove { flex-shrink: 0; font-size: 0.8rem; margin-top: 0.25rem; }
+.resume-add-row { font-size: 0.85rem; margin-top: 0.25rem; }
 
 .admin-preview {
   border-left: 1px solid var(--admin-border);

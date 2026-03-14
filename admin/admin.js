@@ -141,19 +141,15 @@
       setVal("resume-instagram", data.resume.instagramHandle ? data.resume.instagramHandle.replace(/^@/, "") : "");
       setVal("resume-imdb", data.resume.imdbUrl);
       setVal("resume-updated", data.resume.updatedDate);
-      setVal("resume-film", data.resume.film && data.resume.film.map(function (r) {
-        return [r.project, r.role, r.director].join("\t");
-      }).join("\n"));
-      setVal("resume-film-synopses", data.resume.film && data.resume.film.map(function (r) { return r.synopsis || ""; }).join("\n"));
-      setVal("resume-film-genres", data.resume.film && data.resume.film.map(function (r) { return r.genre || ""; }).join("\n"));
-      setVal("resume-theatre", data.resume.theatre && data.resume.theatre.map(function (r) {
-        return [r.project, r.role, r.director].join("\t");
-      }).join("\n"));
-      setVal("resume-theatre-synopses", data.resume.theatre && data.resume.theatre.map(function (r) { return r.synopsis || ""; }).join("\n"));
-      setVal("resume-theatre-genres", data.resume.theatre && data.resume.theatre.map(function (r) { return r.genre || ""; }).join("\n"));
-      setVal("resume-training", data.resume.training && data.resume.training.map(function (r) {
-        return [r.project, r.role, r.director].join("\t");
-      }).join("\n"));
+      var sections = data.resume.sections && Array.isArray(data.resume.sections) && data.resume.sections.length
+        ? data.resume.sections
+        : [
+            data.resume.film && data.resume.film.length ? { title: "Film", rows: data.resume.film } : null,
+            data.resume.theatre && data.resume.theatre.length ? { title: "Theatre", rows: data.resume.theatre } : null,
+            data.resume.training && data.resume.training.length ? { title: "Training", rows: data.resume.training } : null
+          ].filter(Boolean);
+      if (!sections.length) sections = [{ title: "Film", rows: [] }, { title: "Theatre", rows: [] }, { title: "Training", rows: [] }];
+      renderResumeSections(sections);
       setVal("resume-skills", data.resume.skills && data.resume.skills.map(function (s) {
         return [s.category, s.items].join("\t");
       }).join("\n"));
@@ -196,27 +192,101 @@
     });
   }
 
-  function mergeSynopsisGenre(rows, synopsisText, genreText) {
-    var synopsisLines = (synopsisText || "").split("\n").map(function (s) { return s.trim(); });
-    var genreLines = (genreText || "").split("\n").map(function (s) { return s.trim(); });
-    return rows.map(function (row, i) {
-      return {
-        project: row.project,
-        role: row.role,
-        director: row.director,
-        synopsis: synopsisLines[i] || "",
-        genre: genreLines[i] || ""
+  var resumeSectionsContainer = document.getElementById("resume-sections-admin");
+  var resumeAddSectionBtn = document.getElementById("resume-add-section");
+
+  function makeResumeRowEl(row) {
+    row = row || { project: "", role: "", director: "", synopsis: "", genre: "" };
+    var div = document.createElement("div");
+    div.className = "resume-row-card";
+    div.innerHTML = "<div class=\"resume-row-fields\">" +
+      "<input type=\"text\" class=\"resume-row-project\" placeholder=\"Project\" value=\"" + escapeAttr(row.project) + "\">" +
+      "<input type=\"text\" class=\"resume-row-role\" placeholder=\"Role\" value=\"" + escapeAttr(row.role) + "\">" +
+      "<input type=\"text\" class=\"resume-row-director\" placeholder=\"Director / Studio\" value=\"" + escapeAttr(row.director) + "\">" +
+      "<textarea class=\"resume-row-synopsis\" placeholder=\"Synopsis (tooltip)\" rows=\"2\">" + escapeHtml(row.synopsis || "") + "</textarea>" +
+      "<input type=\"text\" class=\"resume-row-genre\" placeholder=\"Genre\" value=\"" + escapeAttr(row.genre || "") + "\">" +
+      "</div><button type=\"button\" class=\"resume-row-remove btn btn-ghost\" aria-label=\"Remove row\">Remove</button>";
+    return div;
+  }
+
+  function makeSectionBlockEl(section) {
+    section = section || { title: "New section", rows: [] };
+    var div = document.createElement("div");
+    div.className = "resume-section-block";
+    var titleVal = escapeAttr(section.title || "New section");
+    div.innerHTML = "<div class=\"resume-section-block-head\"><input type=\"text\" class=\"resume-section-title-input\" placeholder=\"Section title (e.g. Film, Theatre)\" value=\"" + titleVal + "\"><button type=\"button\" class=\"resume-section-remove btn btn-ghost\" aria-label=\"Remove section\">Remove section</button></div><div class=\"resume-rows-container\"></div><button type=\"button\" class=\"resume-add-row btn btn-ghost\">+ Add row</button>";
+    var rowsContainer = div.querySelector(".resume-rows-container");
+    (section.rows || []).forEach(function (r) { rowsContainer.appendChild(makeResumeRowEl(r)); });
+    if (!(section.rows && section.rows.length)) rowsContainer.appendChild(makeResumeRowEl());
+    return div;
+  }
+
+  function renderResumeSections(sections) {
+    if (!resumeSectionsContainer) return;
+    resumeSectionsContainer.innerHTML = "";
+    (sections || []).forEach(function (sec) {
+      resumeSectionsContainer.appendChild(makeSectionBlockEl(sec));
+    });
+    bindResumeSectionEvents();
+  }
+
+  function bindResumeSectionEvents() {
+    if (!resumeSectionsContainer) return;
+    resumeSectionsContainer.querySelectorAll(".resume-add-row").forEach(function (btn) {
+      btn.onclick = function () {
+        var block = btn.closest(".resume-section-block");
+        var container = block && block.querySelector(".resume-rows-container");
+        if (container) container.appendChild(makeResumeRowEl());
       };
     });
+    resumeSectionsContainer.querySelectorAll(".resume-row-remove").forEach(function (btn) {
+      btn.onclick = function () {
+        var row = btn.closest(".resume-row-card");
+        var container = row && row.parentElement;
+        if (container && container.querySelectorAll(".resume-row-card").length > 1) row.remove();
+      };
+    });
+    resumeSectionsContainer.querySelectorAll(".resume-section-remove").forEach(function (btn) {
+      btn.onclick = function () {
+        var block = btn.closest(".resume-section-block");
+        if (block && resumeSectionsContainer.querySelectorAll(".resume-section-block").length > 1) block.remove();
+      };
+    });
+  }
+
+  if (resumeAddSectionBtn) {
+    resumeAddSectionBtn.addEventListener("click", function () {
+      if (!resumeSectionsContainer) return;
+      resumeSectionsContainer.appendChild(makeSectionBlockEl({ title: "New section", rows: [] }));
+      bindResumeSectionEvents();
+    });
+  }
+
+  function getResumeSectionsFromAdmin() {
+    if (!resumeSectionsContainer) return [];
+    var out = [];
+    resumeSectionsContainer.querySelectorAll(".resume-section-block").forEach(function (block) {
+      var titleInput = block.querySelector(".resume-section-title-input");
+      var title = titleInput ? titleInput.value.trim() || "Section" : "Section";
+      var rows = [];
+      block.querySelectorAll(".resume-row-card").forEach(function (card) {
+        var project = (card.querySelector(".resume-row-project") || {}).value || "";
+        var role = (card.querySelector(".resume-row-role") || {}).value || "";
+        var director = (card.querySelector(".resume-row-director") || {}).value || "";
+        var synopsis = (card.querySelector(".resume-row-synopsis") || {}).value || "";
+        var genre = (card.querySelector(".resume-row-genre") || {}).value || "";
+        rows.push({ project: project, role: role, director: director, synopsis: synopsis, genre: genre });
+      });
+      out.push({ title: title, rows: rows });
+    });
+    return out;
   }
 
   function getContentFromForm() {
     var galleryUrls = getVal("gallery-images").split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
     while (galleryUrls.length < 6) galleryUrls.push("");
-    var filmRows = parseTableTextarea(getVal("resume-film"));
-    var theatreRows = parseTableTextarea(getVal("resume-theatre"));
-    var film = filmRows.length ? mergeSynopsisGenre(filmRows, getVal("resume-film-synopses"), getVal("resume-film-genres")) : [{ project: "", role: "", director: "", synopsis: "", genre: "" }];
-    var theatre = theatreRows.length ? mergeSynopsisGenre(theatreRows, getVal("resume-theatre-synopses"), getVal("resume-theatre-genres")) : [{ project: "", role: "", director: "", synopsis: "", genre: "" }];
+    var sections = getResumeSectionsFromAdmin();
+    if (!sections.length) sections = [{ title: "Film", rows: [] }, { title: "Theatre", rows: [] }, { title: "Training", rows: [] }];
     return {
       hero: {
         tagline: getVal("hero-tagline") || "Actor",
@@ -266,9 +336,7 @@
         instagramHandle: getVal("resume-instagram") || "natewade",
         imdbUrl: getVal("resume-imdb"),
         updatedDate: getVal("resume-updated") || "March 2026",
-        film: film,
-        theatre: theatre,
-        training: parseTableTextarea(getVal("resume-training")).length ? parseTableTextarea(getVal("resume-training")) : [{ project: "", role: "", director: "" }],
+        sections: sections,
         skills: parseSkillsTextarea(getVal("resume-skills")).length ? parseSkillsTextarea(getVal("resume-skills")) : [{ category: "Skills", items: "" }]
       }
     };
@@ -291,14 +359,17 @@
   }
 
   function initPreview() {
-    var inputs = document.querySelectorAll(".admin-main input, .admin-main textarea");
-    inputs.forEach(function (el) {
-      el.addEventListener("input", function () {
+    var main = document.querySelector(".admin-main");
+    if (main) {
+      main.addEventListener("input", function () {
         clearTimeout(previewDebounceTimer);
         previewDebounceTimer = setTimeout(updatePreview, PREVIEW_DEBOUNCE_MS);
       });
-      el.addEventListener("change", updatePreview);
-    });
+      main.addEventListener("change", function () {
+        clearTimeout(previewDebounceTimer);
+        updatePreview();
+      });
+    }
     updatePreview();
   }
 
@@ -445,6 +516,7 @@
       }
       var file = files[0];
       var path = ASSETS_FOLDER + "/" + file.name;
+      showToast("Uploading to GitHub…", "success");
       var reader = new FileReader();
       reader.onload = function () {
         var base64 = reader.result.split(",")[1];
@@ -473,7 +545,7 @@
           })
           .then(function (res) {
             if (!res.ok) return res.json().then(function (body) { throw new Error(body.message || res.statusText); });
-            showToast("Uploaded: " + file.name, "success");
+            showToast("Saved to GitHub: " + file.name, "success");
             loadAssetsList();
           })
           .catch(function (err) {

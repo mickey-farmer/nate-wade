@@ -181,19 +181,52 @@
       resumeUpdated.textContent = "Resume updated " + data.resume.updatedDate;
     }
 
-    // Resume tables: Film, Theatre, Training, Skills
-    if (data.resume && data.resume.film && Array.isArray(data.resume.film)) {
-      fillResumeTable("#film-heading", data.resume.film);
-    }
-    if (data.resume && data.resume.theatre && Array.isArray(data.resume.theatre)) {
-      fillResumeTable("#theatre-heading", data.resume.theatre);
-    }
-    if (data.resume && data.resume.training && Array.isArray(data.resume.training)) {
-      fillResumeTable("#training-heading", data.resume.training);
+    // Resume: sections (or legacy film/theatre/training) + skills
+    var sectionsContainer = document.getElementById("resume-sections-container");
+    if (data.resume && sectionsContainer) {
+      var sections = data.resume.sections && Array.isArray(data.resume.sections) && data.resume.sections.length
+        ? data.resume.sections
+        : legacySectionsFromResume(data.resume);
+      fillResumeSections(sectionsContainer, sections);
     }
     if (data.resume && data.resume.skills && Array.isArray(data.resume.skills)) {
       fillSkillsSection(data.resume.skills);
     }
+  }
+
+  function legacySectionsFromResume(resume) {
+    var out = [];
+    if (resume.film && resume.film.length) out.push({ title: "Film", rows: resume.film });
+    if (resume.theatre && resume.theatre.length) out.push({ title: "Theatre", rows: resume.theatre });
+    if (resume.training && resume.training.length) out.push({ title: "Training", rows: resume.training });
+    return out.length ? out : [{ title: "Film", rows: [] }, { title: "Theatre", rows: [] }, { title: "Training", rows: [] }];
+  }
+
+  function fillResumeSections(container, sections) {
+    if (!container || !Array.isArray(sections)) return;
+    container.innerHTML = "";
+    sections.forEach(function (sec, i) {
+      var id = "resume-section-" + i;
+      var sectionEl = document.createElement("section");
+      sectionEl.className = "resume-section";
+      sectionEl.setAttribute("aria-labelledby", id);
+      sectionEl.innerHTML = "<h2 id=\"" + id + "\" class=\"resume-section-title\">" + escapeHtml(sec.title || "Section") + "</h2>" +
+        "<table class=\"resume-credits\"><thead><tr><th scope=\"col\">Project</th><th scope=\"col\">Role</th><th scope=\"col\">Director / Studio</th></tr></thead><tbody></tbody></table>";
+      var tbody = sectionEl.querySelector("tbody");
+      var infoIconSvg = "<svg class=\"resume-info-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/></svg>";
+      (sec.rows || []).forEach(function (row) {
+        var synopsis = (row.synopsis || "").trim();
+        var genre = (row.genre || "").trim();
+        var hasTooltip = synopsis || genre;
+        var projectCell = "";
+        if (hasTooltip) {
+          projectCell = "<span class=\"resume-project-trigger\" data-title=\"" + escapeAttr(row.project || "") + "\" data-synopsis=\"" + escapeAttr(synopsis) + "\" data-genre=\"" + escapeAttr(genre) + "\" aria-label=\"More info\">" + infoIconSvg + "</span>";
+        }
+        projectCell += escapeHtml(row.project || "");
+        tbody.innerHTML += "<tr><td class=\"col-project\">" + projectCell + "</td><td class=\"col-role\">" + escapeHtml(row.role || "") + "</td><td class=\"col-director\">" + escapeHtml(row.director || "") + "</td></tr>";
+      });
+      container.appendChild(sectionEl);
+    });
   }
 
   function escapeHtml(s) {
