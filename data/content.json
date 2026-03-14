@@ -1,7 +1,7 @@
 {
   "hero": {
     "tagline": "Film | TV | Voice Over | update",
-    "heroImageUrl": "assets/acting/Screenshot 2026-03-13 at 5.25.27 PM.png"
+    "heroImageUrl": "assets/acting/"
   },
   "about": {
     "headline": "Story first.",
@@ -64,9 +64,9 @@
           {
             "project": "First Light",
             "role": "Supporting",
-            "director": "dir. Rorey Younge",
+            "director": "Rorey Younge",
             "synopsis": "",
-            "genre": "Drama"
+            "genre": ""
           }
         ]
       }
